@@ -4,7 +4,9 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+
 import android.opengl.GLSurfaceView.Renderer;
+import android.opengl.Matrix;
 
 import com.example.utils.LoggerConfig;
 import com.example.utils.ShaderHelper;
@@ -21,23 +23,35 @@ public class AirHockeyRenender implements Renderer{
 	private FloatBuffer vertexData;
 	private Context context;
 	private int program;
-	private static final String U_COLOR="u_Color",A_POSITION="a_Position",A_COLOR="a_Color";
-	private int uColorLocation,aPositionLocation,aColorLocation;
+	private static final String U_COLOR="u_Color",A_POSITION="a_Position",A_COLOR="a_Color",U_MATRIX="u_Matrix";
+	private int uColorLocation,aPositionLocation,aColorLocation,uMatrixLocation;
+	private final float[] projectionMatrix=new float[16];
+
+
 	
 	public AirHockeyRenender(Context context) {
 		// TODO Auto-generated constructor stub
 		float[] tableVertices={
 
+								//内正方形
 								0f,0f,1f,1f,1f,
 								-0.5f,-0.5f,0.7f,0.7f,0.7f,
 								0.5f,-0.5f,0.7f,0.7f,0.7f,
 								0.5f,0.5f,0.7f,0.7f,0.7f,
 								-0.5f,0.5f,0.7f,0.7f,0.7f,
 								-0.5f,-0.5f,0.7f,0.7f,0.7f,
+								//外正方形
+								0f,0f,1f,1f,1f,
+								-0.55f,-0.52f,1f,0f,0f,
+								0.55f,-0.52f,0f,1f,0f,
+								0.55f,0.52f,0f,0f,1f,
+								-0.55f,0.52f,1f,0.988f,0.231f,
+								-0.55f,-0.52f,1f,0f,0f,
 
+								//线
 								-0.5f,0f,1f,0f,0f,
-								0.5f,0f,1f,0f,0f,
-
+								0.5f,0f,0f,1f,0f,
+								//两个点
 								0f,-0.25f,0f,0f,1f,
 								0f,0.25f,1f,0f,0f
 		};
@@ -71,6 +85,7 @@ public class AirHockeyRenender implements Renderer{
 
 		aColorLocation=glGetAttribLocation(program,A_COLOR);
 		aPositionLocation = glGetAttribLocation(program, A_POSITION);
+		uMatrixLocation=glGetUniformLocation(program,U_MATRIX);
 
 		// Bind our data, specified by the variable vertexData, to the vertex
 		// attribute at location A_POSITION_LOCATION.
@@ -78,7 +93,6 @@ public class AirHockeyRenender implements Renderer{
 		glVertexAttribPointer(aPositionLocation, POSITION_COMPONENT_COUNT, GL_FLOAT,
 				false, STRIDE, vertexData);
 		glEnableVertexAttribArray(aPositionLocation);
-
 		vertexData.position(POSITION_COMPONENT_COUNT);
 		glVertexAttribPointer(aColorLocation, COLOR_COMPONENT_COUNT, GL_FLOAT,
 				false, STRIDE	, vertexData);
@@ -89,28 +103,33 @@ public class AirHockeyRenender implements Renderer{
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		// TODO Auto-generated method stub
 		glViewport(0, 0, width, height);
+		final float aspectRatio=width>height?(float)width/(float)height:(float)height/(float)width;
+		if(width>height)
+			Matrix.orthoM(projectionMatrix,0,-aspectRatio,aspectRatio,-1f,1f,-1f,1f);
+		else
+			Matrix.orthoM(projectionMatrix,0,-1f,1f,-aspectRatio,aspectRatio,-1f,1f);
 	}
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
 		// TODO Auto-generated method stub
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		glUniformMatrix4fv(uMatrixLocation,1,false,projectionMatrix,0);
 		// Draw the table.
 //		glUniform4f(uColorLocation, 1.0f, 1.0f, 1.0f, 1.0f);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-
+		glDrawArrays(GL_TRIANGLE_FAN,6,6);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
 		// Draw the center dividing line.
 //		glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
-		glDrawArrays(GL_LINES, 6, 2);
+		glDrawArrays(GL_LINES, 12, 2);
 
 		// Draw the first mallet blue.
 //		glUniform4f(uColorLocation, 0.0f, 0.0f, 1.0f, 1.0f);
-		glDrawArrays(GL_POINTS, 8, 1);
+		glDrawArrays(GL_POINTS, 14, 1);
 
 		// Draw the second mallet red.
 //		glUniform4f(uColorLocation, 1.0f, 0.0f, 0.0f, 1.0f);
-		glDrawArrays(GL_POINTS, 9, 1);
+		glDrawArrays(GL_POINTS, 15, 1);
 	}
 
 }
