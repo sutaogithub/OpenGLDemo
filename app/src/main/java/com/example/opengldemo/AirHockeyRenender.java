@@ -19,41 +19,38 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 public class AirHockeyRenender implements Renderer{
 
-	private static final int POSITION_COMPONENT_COUNT=2,BYTE_PER_FLOAT=4,COLOR_COMPONENT_COUNT=3,STRIDE=(POSITION_COMPONENT_COUNT+COLOR_COMPONENT_COUNT)*BYTE_PER_FLOAT;
+	private static final int POSITION_COMPONENT_COUNT=4,BYTE_PER_FLOAT=4,COLOR_COMPONENT_COUNT=3,STRIDE=(POSITION_COMPONENT_COUNT+COLOR_COMPONENT_COUNT)*BYTE_PER_FLOAT;
 	private FloatBuffer vertexData;
 	private Context context;
 	private int program;
 	private static final String U_COLOR="u_Color",A_POSITION="a_Position",A_COLOR="a_Color",U_MATRIX="u_Matrix";
 	private int uColorLocation,aPositionLocation,aColorLocation,uMatrixLocation;
 	private final float[] projectionMatrix=new float[16];
-
-
-	
 	public AirHockeyRenender(Context context) {
 		// TODO Auto-generated constructor stub
 		float[] tableVertices={
 
 								//内正方形
-								0f,0f,1f,1f,1f,
-								-0.5f,-0.5f,0.7f,0.7f,0.7f,
-								0.5f,-0.5f,0.7f,0.7f,0.7f,
-								0.5f,0.5f,0.7f,0.7f,0.7f,
-								-0.5f,0.5f,0.7f,0.7f,0.7f,
-								-0.5f,-0.5f,0.7f,0.7f,0.7f,
+								0f,0f,0f,1.5f,1f,1f,1f,
+								-0.9f,-0.5f,0f,1f,0.7f,0.7f,0.7f,
+								0.9f,-0.5f,0f,1f,0.7f,0.7f,0.7f,
+								0.9f,0.5f,0f,2f,0.7f,0.7f,0.7f,
+								-0.9f,0.5f,0f,2f,0.7f,0.7f,0.7f,
+								-0.9f,-0.5f,0f,1f,0.7f,0.7f,0.7f,
 								//外正方形
-								0f,0f,1f,1f,1f,
-								-0.55f,-0.52f,1f,0f,0f,
-								0.55f,-0.52f,0f,1f,0f,
-								0.55f,0.52f,0f,0f,1f,
-								-0.55f,0.52f,1f,0.988f,0.231f,
-								-0.55f,-0.52f,1f,0f,0f,
+								0f,0f,0f,1.5f,1f,1f,1f,
+								-1f,-0.52f,0f,1f,1f,0f,0f,
+								1f,-0.52f,0f,1f,0f,1f,0f,
+								1f,0.52f,0f,2f,0f,0f,1f,
+								-1f,0.52f,0f,2f,1f,0.988f,0.231f,
+								-1f,-0.52f,0f,1f,1f,0f,0f,
 
 								//线
-								-0.5f,0f,1f,0f,0f,
-								0.5f,0f,0f,1f,0f,
+								-1f,0f,0f,1.5f,1f,0f,0f,
+								1f,0f,0f,1.5f,0f,1f,0f,
 								//两个点
-								0f,-0.25f,0f,0f,1f,
-								0f,0.25f,1f,0f,0f
+								0f,-0.25f,0f,1.25f,0f,0f,1f,
+								0f,0.25f,0f,1.75f,1f,0f,0f
 		};
 		vertexData=ByteBuffer.allocateDirect(tableVertices.length*BYTE_PER_FLOAT)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();

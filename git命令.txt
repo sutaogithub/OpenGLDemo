@@ -1,0 +1,9 @@
+git init   //建立仓库
+git add . 或文件名   //添加当前目录下所有文件或指定文件
+git commit -m "描述"   //提交改变
+git remote add origin https:....  //设置远程仓库
+git push -u origin master	//将master内容提交到远程仓库
+git clone https://....   //克隆远程仓库到本地
+git pull origin master  //远程获取最新版本并merge到master分支
+git status //查看是否有文件修改过却没提交
+git log //提交的历史记录
