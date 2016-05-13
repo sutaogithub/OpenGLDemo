@@ -1,3 +1,11 @@
+/***
+ * Excerpted from "OpenGL ES for Android",
+ * published by The Pragmatic Bookshelf.
+ * Copyrights apply to this code. It may not be used to create training material, 
+ * courses, books, articles, and the like. Contact us if you are in doubt.
+ * We make no guarantees that this code is fit for any purpose. 
+ * Visit http://www.pragmaticprogrammer.com/titles/kbogla for more book information.
+***/
 package com.example.utils;
 
 import java.io.BufferedReader;
@@ -6,36 +14,39 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 public class TextResourceReader {
-	
-	public static String readTextFromResource(Context context,int resId){
-		StringBuilder builder=new StringBuilder();
-		InputStream input = null;
-		BufferedReader reader = null;
-		String line;
-		try {
-			 input=context.getResources().openRawResource(resId);
-			 reader=new BufferedReader(new InputStreamReader(input));
-			while((line=reader.readLine())!=null){
-				builder.append(line+"\n");
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally {
-			try {
-				reader.close();
-				input.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+    /**
+     * Reads in text from a resource file and returns a String containing the
+     * text.
+     */
+    public static String readTextFileFromResource(Context context,
+        int resourceId) {
+        StringBuilder body = new StringBuilder();
 
-		return builder.toString();
+        try {
+            InputStream inputStream = context.getResources()
+                .openRawResource(resourceId);
+            InputStreamReader inputStreamReader = new InputStreamReader(
+                inputStream);
+            BufferedReader bufferedReader = new BufferedReader(
+                inputStreamReader);
 
-		
-	}
+            String nextLine;
 
+            while ((nextLine = bufferedReader.readLine()) != null) {
+                body.append(nextLine);
+                body.append('\n');
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(
+                "Could not open resource: " + resourceId, e);
+        } catch (Resources.NotFoundException nfe) {
+            throw new RuntimeException("Resource not found: " 
+                + resourceId, nfe);
+        }
+
+        return body.toString();
+    }
 }
